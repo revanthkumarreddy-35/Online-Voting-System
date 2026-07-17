@@ -1,0 +1,49 @@
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.container-main {
+  flex: 1;
+  padding: 2rem 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Scrollbar styles for dark theme */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color-light);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-color);
+}
+
+/* Basic overrides for React Bootstrap Forms */
+.form-control, .form-select {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-primary) !important;
+  backdrop-filter: blur(10px);
+}
+
+.form-control:focus, .form-select:focus {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 0 0.25rem rgba(139, 92, 246, 0.25) !important;
+}
+
+.form-control::placeholder {
+  color: var(--text-secondary);
+}

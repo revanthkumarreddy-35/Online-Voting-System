@@ -1,0 +1,87 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* Core Colors - Sleek Dark Theme */
+  --bg-color: #0f172a; /* Slate 900 */
+  --bg-color-light: #1e293b; /* Slate 800 */
+  
+  --primary-color: #8b5cf6; /* Vibrant Purple */
+  --primary-hover: #7c3aed;
+  
+  --secondary-color: #3b82f6; /* Bright Blue */
+  --accent-color: #06b6d4; /* Cyan */
+  
+  --text-primary: #f8fafc; /* Slate 50 */
+  --text-secondary: #94a3b8; /* Slate 400 */
+  
+  --border-color: rgba(255, 255, 255, 0.1);
+  --border-color-light: rgba(255, 255, 255, 0.2);
+  
+  /* Glassmorphism Utilities */
+  --glass-bg: rgba(30, 41, 59, 0.7);
+  --glass-border: 1px solid rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  --glass-blur: blur(12px);
+  
+  --border-radius: 16px;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body {
+  margin: 0;
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--bg-color);
+  background-image: 
+    radial-gradient(circle at 15% 50%, rgba(139, 92, 246, 0.15), transparent 25%),
+    radial-gradient(circle at 85% 30%, rgba(59, 130, 246, 0.15), transparent 25%);
+  background-attachment: fixed;
+  color: var(--text-primary);
+  min-height: 100vh;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+/* Base Overrides for Bootstrap to fit dark theme */
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+a:hover {
+  color: var(--secondary-color);
+}
+
+/* Custom Glass Card Class */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: var(--glass-border);
+  border-radius: var(--border-radius);
+  box-shadow: var(--glass-shadow);
+  transition: var(--transition);
+}
+
+.glass-card:hover {
+  border-color: var(--border-color-light);
+  transform: translateY(-5px);
+}
+
+/* Custom Button overrides */
+.btn-primary, .btn-primary:active, .btn-primary:focus {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
+  border: none !important;
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4) !important;
+  border-radius: 8px;
+  transition: var(--transition) !important;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6) !important;
+}
