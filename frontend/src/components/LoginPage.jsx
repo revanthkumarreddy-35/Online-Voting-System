@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaUser, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
-import axios from "axios";
+import api from "../api";
+import Spinner from "./Spinner";
 import "./LoginPage.css";
 
 function LoginPage({ onLogin }) {
@@ -18,8 +19,8 @@ function LoginPage({ onLogin }) {
         setErrorMessage("");
 
         try {
-            const response = await axios.post(
-                `http://localhost:8080/api/users/login?username=${username}&password=${password}`
+            const response = await api.post(
+                `/users/login?username=${username}&password=${password}`
             );
             const userData = response.data;
 
@@ -46,6 +47,7 @@ function LoginPage({ onLogin }) {
 
     return (
         <div className="login-container">
+            {isLoading && <Spinner message="Authenticating..." />}
             <div className="glass-card login-card">
                 <div className="login-header">
                     <h2 className="login-title">Welcome Back</h2>
