@@ -31,45 +31,10 @@ public class Vote {
     //@JsonBackReference
     private Candidate candidate;
 
+    @Column(name = "vote_time")
+    private LocalDateTime voteTime;
+
     public Vote() {
         // Default constructor for deserialization
     }
-
-	public void setCandidate(Candidate candidate2) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void setElection(Object election2) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void setUser(User user2) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void setVoteTime(LocalDateTime now) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public Candidate getCandidate() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public Object getElection() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public User getUser() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-
 }

@@ -118,14 +118,20 @@ public class UserService {
     }
 
 	public boolean validatePasswordResetToken(String token) {
-		// TODO Auto-generated method stub
-		return false;
+		Optional<ResetToken> resetToken = resetTokenRepository.findByToken(token);
+		return resetToken.isPresent() && resetToken.get().getExpiryDate().isAfter(LocalDateTime.now());
 	}
 
+	@Transactional
 	public boolean resetUserPassword(String token, String newPassword) {
-		// TODO Auto-generated method stub
+		Optional<ResetToken> resetTokenOpt = resetTokenRepository.findByToken(token);
+		if (resetTokenOpt.isPresent() && resetTokenOpt.get().getExpiryDate().isAfter(LocalDateTime.now())) {
+			User user = resetTokenOpt.get().getUser();
+			user.setPassword(newPassword); // Should ideally be hashed
+			userRepository.save(user);
+			resetTokenRepository.delete(resetTokenOpt.get());
+			return true;
+		}
 		return false;
 	}
-
-    // ... remaining password-reset methods omitted for brevity ...
 }

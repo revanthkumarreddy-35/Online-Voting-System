@@ -1,7 +1,7 @@
 // VoteController.java
 package com.auca.onlinevotingsystem.controller;
 
-import com.auca.onlinevotingsystem.dto.CandidateDto;
+import com.auca.onlinevotingsystem.dto.CastVoteRequest;
 import com.auca.onlinevotingsystem.model.*;
 import com.auca.onlinevotingsystem.service.*;
 import jakarta.servlet.http.HttpSession;
@@ -41,13 +41,13 @@ public class VoteController {
     }
 
     @PostMapping(consumes = "application/json", produces = "application/json")
-    public ResponseEntity<String> castVote(@RequestBody CandidateDto candidateDto,
+    public ResponseEntity<String> castVote(@RequestBody CastVoteRequest voteRequest,
                                            @RequestHeader Map<String, String> headers,
                                            HttpSession session) {
         try {
             headers.forEach((key, value) -> System.out.println(key + ": " + value));
-            long userId = candidateDto.getUserId();
-            Candidate candidate = candidateService.getCandidateById(candidateDto.getCandidateId());
+            long userId = voteRequest.getUserId();
+            Candidate candidate = candidateService.getCandidateById(voteRequest.getCandidateId());
 
             User user = new User();
             user.setId(userId);
