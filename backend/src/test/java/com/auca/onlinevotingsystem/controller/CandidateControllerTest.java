@@ -1,7 +1,6 @@
 package com.auca.onlinevotingsystem.controller;
 
 import com.auca.onlinevotingsystem.config.AuthInterceptor;
-import com.auca.onlinevotingsystem.model.Candidate;
 import com.auca.onlinevotingsystem.service.CandidateService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

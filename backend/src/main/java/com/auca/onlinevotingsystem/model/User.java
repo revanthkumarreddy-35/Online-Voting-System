@@ -6,8 +6,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.Set;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-
 @Entity
 @Table(name = "users")
 @Data
