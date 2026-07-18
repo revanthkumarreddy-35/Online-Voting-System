@@ -11,6 +11,7 @@ import SearchUser from './components/searchUser';
 import UploadUser from './components/Upload';
 import ForgotPassword from "./components/ForgotPassword";
 import ResetPassword from "./components/ResetPassword";
+import BulletinBoard from "./components/BulletinBoard";
 
 // Multi-language support imports
 import './i18n';
@@ -138,6 +139,7 @@ function App() {
                 <Route path="*" element={<Navigate to="/login" replace={true} />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="/bulletin-board" element={<BulletinBoard />} />
                 <Route path="/admin/vote-management" element={<VotesManagement />} />
 
             </Routes>

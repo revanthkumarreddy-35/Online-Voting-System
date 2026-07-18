@@ -1,10 +1,11 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
-import { FaUserCircle, FaSignOutAlt } from "react-icons/fa";
+import { useNavigate, useLocation } from "react-router-dom";
+import { FaUserCircle, FaSignOutAlt, FaShieldAlt } from "react-icons/fa";
 import "./Navbar.css";
 
 function Navbar({ title = "VoteCast" }) {
     const navigate = useNavigate();
+    const location = useLocation();
     const user = JSON.parse(sessionStorage.getItem("user"));
 
     const handleLogout = () => {
@@ -27,7 +28,12 @@ function Navbar({ title = "VoteCast" }) {
                 </div>
                 
                 {user && (
-                    <div className="navbar-actions">
+                    <div className="navbar-actions" style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+                        {location.pathname !== "/bulletin-board" && (
+                            <button onClick={() => navigate("/bulletin-board")} className="btn btn-sm" style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', display: 'flex', alignItems: 'center', gap: '0.5rem', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
+                                <FaShieldAlt /> Verify Receipt
+                            </button>
+                        )}
                         <div className="user-profile">
                             <FaUserCircle size={20} className="user-icon" />
                             <span className="user-name">{user.firstName}</span>

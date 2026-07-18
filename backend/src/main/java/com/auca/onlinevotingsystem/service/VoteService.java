@@ -27,6 +27,10 @@ public class VoteService {
     public Optional<Vote> getVoteById(Long voteId) {
         return voteRepository.findById(voteId);
     }
+    
+    public Optional<Vote> getVoteByReceiptId(String receiptId) {
+        return voteRepository.findByReceiptId(receiptId);
+    }
 
     public Vote saveVote(Vote vote) {
         return voteRepository.save(vote);

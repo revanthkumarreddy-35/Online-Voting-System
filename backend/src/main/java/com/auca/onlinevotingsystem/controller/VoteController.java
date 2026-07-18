@@ -8,10 +8,11 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.util.HashMap;
 
 @RestController
 @RequestMapping("/api/votes")
@@ -39,9 +40,23 @@ public class VoteController {
         Long voteCount = voteService.getVoteCountForCandidate(candidateId);
         return ResponseEntity.ok(voteCount);
     }
+    
+    @GetMapping("/receipt/{receiptId}")
+    public ResponseEntity<Map<String, String>> verifyReceipt(@PathVariable String receiptId) {
+        return voteService.getVoteByReceiptId(receiptId)
+                .map(vote -> {
+                    Map<String, String> response = new HashMap<>();
+                    response.put("status", "VERIFIED");
+                    response.put("message", "Vote is securely stored in the ledger.");
+                    response.put("timestamp", vote.getVoteTime() != null ? vote.getVoteTime().toString() : "N/A");
+                    response.put("election", vote.getElection() != null ? vote.getElection().getElectionName() : "Unknown Election");
+                    return ResponseEntity.ok(response);
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
 
     @PostMapping(consumes = "application/json", produces = "application/json")
-    public ResponseEntity<String> castVote(@RequestBody CastVoteRequest voteRequest,
+    public ResponseEntity<Map<String, String>> castVote(@RequestBody CastVoteRequest voteRequest,
                                            @RequestHeader Map<String, String> headers,
                                            HttpSession session) {
         try {
@@ -57,12 +72,23 @@ public class VoteController {
             vote.setElection(((Candidate) candidate).getElection());
             vote.setUser(user);
             vote.setVoteTime(LocalDateTime.now());
+            
+            // Generate Cryptographic Receipt ID (Simulated with UUID for Phase 3)
+            String receiptId = "TX-" + UUID.randomUUID().toString().substring(0, 18).toUpperCase();
+            vote.setReceiptId(receiptId);
 
             voteService.saveVote(vote);
-            return ResponseEntity.ok("Vote cast successfully.");
+            
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Vote cast successfully.");
+            response.put("receiptId", receiptId);
+            
+            return ResponseEntity.ok(response);
         } catch (Exception ex) {
             ex.printStackTrace();
-            return ResponseEntity.badRequest().body(ex.getMessage());
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", ex.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
         }
     }
 

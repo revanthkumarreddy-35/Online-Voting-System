@@ -34,6 +34,9 @@ public class Vote {
     @Column(name = "vote_time")
     private LocalDateTime voteTime;
 
+    @Column(name = "receipt_id", unique = true)
+    private String receiptId;
+
     public Vote() {
         // Default constructor for deserialization
     }

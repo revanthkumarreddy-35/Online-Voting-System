@@ -1,459 +1,3 @@
-// import React, { useState, useEffect } from "react";
-// import { Button, Card, Modal, Form, InputGroup, Spinner } from "react-bootstrap";
-// import axios from "axios";
-// import "bootstrap/dist/css/bootstrap.min.css";
-// import "font-awesome/css/font-awesome.min.css";
-//
-// function VoterPage() {
-//     const [elections, setElections] = useState([]);
-//     const [candidates, setCandidates] = useState([]);
-//     const [selectedElection, setSelectedElection] = useState("");
-//     const [searchTerm, setSearchTerm] = useState("");
-//     const [votedCandidates, setVotedCandidates] = useState([]);
-//     const [showModal, setShowModal] = useState(false);
-//     const [candidateToVote, setCandidateToVote] = useState(null);
-//     const [loading, setLoading] = useState(false);
-//
-//     useEffect(() => {
-//         fetchElections();
-//         fetchCandidates();
-//     }, []);
-//
-//     const fetchElections = async () => {
-//         try {
-//             const response = await axios.get("http://localhost:8080/api/elections");
-//             setElections(response.data);
-//         } catch (error) {
-//             console.error("Error fetching elections:", error);
-//         }
-//     };
-//
-//     const fetchCandidates = async () => {
-//         try {
-//             const response = await axios.get("http://localhost:8080/api/candidates");
-//             setCandidates(response.data);
-//         } catch (error) {
-//             console.error("Error fetching candidates:", error);
-//         }
-//     };
-//
-//     const handleVote = async (candidate) => {
-//         const user = JSON.parse(sessionStorage.getItem("user"));
-//         setLoading(true);
-//         try {
-//             const payload = {
-//                 candidateId: candidate.candidateId,
-//                 userId: user.userId,
-//             };
-//
-//             await axios.post(`http://localhost:8080/api/votes`, payload, {
-//                 headers: { "Content-Type": "application/json" },
-//             });
-//             setVotedCandidates([...votedCandidates, candidate.candidateId]);
-//             setShowModal(false);
-//         } catch (error) {
-//             console.error("Error casting vote:", error);
-//         } finally {
-//             setLoading(false);
-//         }
-//     };
-//
-//     const confirmVote = (candidate) => {
-//         setCandidateToVote(candidate);
-//         setShowModal(true);
-//     };
-//
-//     const filteredCandidates = candidates.filter((candidate) => {
-//         const matchesSearch = candidate.fullName
-//             .toLowerCase()
-//             .includes(searchTerm.toLowerCase());
-//         const matchesElection =
-//             !selectedElection || candidate.election?.electionId.toString() === selectedElection;
-//         return matchesSearch && matchesElection;
-//     });
-//
-//     const handleLogout = () => {
-//         sessionStorage.clear();
-//         window.location.href = "/login"; // Redirect to login page
-//     };
-//
-//     return (
-//         <>
-//             {/* Navbar */}
-//             <nav className="navbar navbar-expand-lg navbar-dark bg-primary shadow">
-//                 <div className="container d-flex justify-content-between align-items-center">
-//                     <div className="d-flex align-items-center">
-//                         <img
-//                             src="http://localhost:8080/images/icons8-vote-100.png"
-//                             alt="VoteCast Logo"
-//                             style={{ height: "40px", marginRight: "10px" }}
-//                         />
-//                         <a className="navbar-brand fw-bold" href="#">
-//                             VoteCast
-//                         </a>
-//                     </div>
-//                     <Button variant="outline-light" onClick={handleLogout}>
-//                         Logout
-//                     </Button>
-//                 </div>
-//             </nav>
-//
-//             {/* Header Section */}
-//             <header
-//                 className="d-flex align-items-center text-white text-center"
-//                 style={{
-//                     background: "linear-gradient(to bottom right, #007bff, #6610f2)",
-//                     minHeight: "50vh",
-//                 }}
-//             >
-//                 <div className="container">
-//                     <h1 className="display-4 fw-bold">Vote for Your Candidate</h1>
-//                     <p className="lead">Secure. Transparent. Convenient.</p>
-//                 </div>
-//             </header>
-//
-//             {/* Filters */}
-//             <section className="py-4 bg-light">
-//                 <div className="container">
-//                     <div className="row">
-//                         <div className="col-md-6">
-//                             <Form.Select
-//                                 onChange={(e) => setSelectedElection(e.target.value)}
-//                                 value={selectedElection}
-//                                 className="form-select"
-//                             >
-//                                 <option value="">All Elections</option>
-//                                 {elections.map((election) => (
-//                                     <option key={election.electionId} value={election.electionId}>
-//                                         {election.electionName}
-//                                     </option>
-//                                 ))}
-//                             </Form.Select>
-//                         </div>
-//                         <div className="col-md-6">
-//                             <InputGroup>
-//                                 <Form.Control
-//                                     type="text"
-//                                     placeholder="Search candidates"
-//                                     onChange={(e) => setSearchTerm(e.target.value)}
-//                                     className="form-control"
-//                                 />
-//                             </InputGroup>
-//                         </div>
-//                     </div>
-//                 </div>
-//             </section>
-//
-//             {/* Candidate Cards */}
-//             <section className="py-4">
-//                 <div className="container">
-//                     <div className="row g-4">
-//                         {filteredCandidates.map((candidate) => (
-//                             <div className="col-md-3" key={candidate.candidateId}>
-//                                 <Card className="shadow-sm" style={{ maxWidth: "18rem" }}>
-//                                     <Card.Img
-//                                         variant="top"
-//                                         src={candidate.image || "http://via.placeholder.com/150"}
-//                                         alt={candidate.fullName}
-//                                     />
-//                                     <Card.Body className="text-center">
-//                                         <Card.Title>{candidate.fullName}</Card.Title>
-//                                         <Card.Text>
-//                                             <strong>Party:</strong> {candidate.party}
-//                                         </Card.Text>
-//                                         <Card.Text>
-//                                             <strong>Election:</strong>{" "}
-//                                             {candidate.election?.electionName || "N/A"}
-//                                         </Card.Text>
-//                                         <Button
-//                                             variant="primary"
-//                                             disabled={votedCandidates.includes(candidate.candidateId)}
-//                                             onClick={() => confirmVote(candidate)}
-//                                         >
-//                                             {votedCandidates.includes(candidate.candidateId)
-//                                                 ? "Voted"
-//                                                 : "Vote"}
-//                                         </Button>
-//                                     </Card.Body>
-//                                 </Card>
-//                             </div>
-//                         ))}
-//                     </div>
-//                 </div>
-//             </section>
-//
-//             {/* Confirmation Modal */}
-//             <Modal show={showModal} onHide={() => setShowModal(false)} centered>
-//                 <Modal.Header closeButton>
-//                     <Modal.Title>Confirm Your Vote</Modal.Title>
-//                 </Modal.Header>
-//                 <Modal.Body>
-//                     Are you sure you want to vote for{" "}
-//                     <strong>{candidateToVote?.fullName}</strong> in{" "}
-//                     <strong>{candidateToVote?.election?.electionName}</strong>?
-//                 </Modal.Body>
-//                 <Modal.Footer>
-//                     <Button variant="secondary" onClick={() => setShowModal(false)}>
-//                         Cancel
-//                     </Button>
-//                     <Button
-//                         variant="success"
-//                         onClick={() => handleVote(candidateToVote)}
-//                         disabled={loading}
-//                     >
-//                         {loading ? <Spinner animation="border" size="sm" /> : "Confirm Vote"}
-//                     </Button>
-//                 </Modal.Footer>
-//             </Modal>
-//         </>
-//     );
-// }
-//
-// export default VoterPage;
-
-
-
-//
-// import React, { useState, useEffect } from "react";
-// import { Button, Card, Modal, Form, InputGroup, Spinner } from "react-bootstrap";
-// import axios from "axios";
-// import "bootstrap/dist/css/bootstrap.min.css";
-// import "font-awesome/css/font-awesome.min.css";
-//
-// function VoterPage() {
-//     const [elections, setElections] = useState([]);
-//     const [candidates, setCandidates] = useState([]);
-//     const [selectedElection, setSelectedElection] = useState("");
-//     const [searchTerm, setSearchTerm] = useState("");
-//     const [votedCandidates, setVotedCandidates] = useState([]);
-//     const [votedElections, setVotedElections] = useState(new Set()); // Track elections where votes were cast
-//     const [showModal, setShowModal] = useState(false);
-//     const [candidateToVote, setCandidateToVote] = useState(null);
-//     const [loading, setLoading] = useState(false);
-//
-//     useEffect(() => {
-//         fetchElections();
-//         fetchCandidates();
-//         loadVotingState(); // Load voting state from localStorage
-//     }, []);
-//
-//     const fetchElections = async () => {
-//         try {
-//             const response = await axios.get("http://localhost:8080/api/elections");
-//             setElections(response.data);
-//         } catch (error) {
-//             console.error("Error fetching elections:", error);
-//         }
-//     };
-//
-//     const fetchCandidates = async () => {
-//         try {
-//             const response = await axios.get("http://localhost:8080/api/candidates");
-//             setCandidates(response.data);
-//         } catch (error) {
-//             console.error("Error fetching candidates:", error);
-//         }
-//     };
-//
-//     const loadVotingState = () => {
-//         const storedVotedCandidates = JSON.parse(localStorage.getItem("votedCandidates")) || [];
-//         const storedVotedElections = new Set(
-//             JSON.parse(localStorage.getItem("votedElections")) || []
-//         );
-//         setVotedCandidates(storedVotedCandidates);
-//         setVotedElections(storedVotedElections);
-//     };
-//
-//     const saveVotingState = (candidateId, electionId) => {
-//         const updatedVotedCandidates = [...votedCandidates, candidateId];
-//         const updatedVotedElections = new Set(votedElections);
-//         updatedVotedElections.add(electionId);
-//
-//         localStorage.setItem("votedCandidates", JSON.stringify(updatedVotedCandidates));
-//         localStorage.setItem("votedElections", JSON.stringify([...updatedVotedElections]));
-//
-//         setVotedCandidates(updatedVotedCandidates);
-//         setVotedElections(updatedVotedElections);
-//     };
-//
-//     const handleVote = async (candidate) => {
-//         const user = JSON.parse(sessionStorage.getItem("user"));
-//         setLoading(true);
-//         try {
-//             const payload = {
-//                 candidateId: candidate.candidateId,
-//                 userId: user.userId,
-//             };
-//
-//             await axios.post(`http://localhost:8080/api/votes`, payload, {
-//                 headers: { "Content-Type": "application/json" },
-//             });
-//             saveVotingState(candidate.candidateId, candidate.election.electionId); // Save voting state
-//             setShowModal(false);
-//         } catch (error) {
-//             console.error("Error casting vote:", error);
-//         } finally {
-//             setLoading(false);
-//         }
-//     };
-//
-//     const confirmVote = (candidate) => {
-//         setCandidateToVote(candidate);
-//         setShowModal(true);
-//     };
-//
-//     const filteredCandidates = candidates.filter((candidate) => {
-//         const matchesSearch = candidate.fullName
-//             .toLowerCase()
-//             .includes(searchTerm.toLowerCase());
-//         const matchesElection =
-//             !selectedElection || candidate.election?.electionId.toString() === selectedElection;
-//         return matchesSearch && matchesElection;
-//     });
-//
-//     const handleLogout = () => {
-//         sessionStorage.clear();
-//         window.location.href = "/login"; // Redirect to login page
-//     };
-//
-//     return (
-//         <>
-//             {/* Navbar */}
-//             <nav className="navbar navbar-expand-lg navbar-dark bg-primary shadow">
-//                 <div className="container d-flex justify-content-between align-items-center">
-//                     <div className="d-flex align-items-center">
-//                         <img
-//                             src="http://localhost:8080/images/icons8-vote-100.png"
-//                             alt="VoteCast Logo"
-//                             style={{ height: "40px", marginRight: "10px" }}
-//                         />
-//                         <a className="navbar-brand fw-bold" href="#">
-//                             VoteCast
-//                         </a>
-//                     </div>
-//                     <Button variant="outline-light" onClick={handleLogout}>
-//                         Logout
-//                     </Button>
-//                 </div>
-//             </nav>
-//
-//             {/* Header Section */}
-//             <header
-//                 className="d-flex align-items-center text-white text-center"
-//                 style={{
-//                     background: "linear-gradient(to bottom right, #007bff, #6610f2)",
-//                     minHeight: "50vh",
-//                 }}
-//             >
-//                 <div className="container">
-//                     <h1 className="display-4 fw-bold">Vote for Your Candidate</h1>
-//                     <p className="lead">Secure. Transparent. Convenient.</p>
-//                 </div>
-//             </header>
-//
-//             {/* Filters */}
-//             <section className="py-4 bg-light">
-//                 <div className="container">
-//                     <div className="row">
-//                         <div className="col-md-6">
-//                             <Form.Select
-//                                 onChange={(e) => setSelectedElection(e.target.value)}
-//                                 value={selectedElection}
-//                                 className="form-select"
-//                             >
-//                                 <option value="">All Elections</option>
-//                                 {elections.map((election) => (
-//                                     <option key={election.electionId} value={election.electionId}>
-//                                         {election.electionName}
-//                                     </option>
-//                                 ))}
-//                             </Form.Select>
-//                         </div>
-//                         <div className="col-md-6">
-//                             <InputGroup>
-//                                 <Form.Control
-//                                     type="text"
-//                                     placeholder="Search candidates"
-//                                     onChange={(e) => setSearchTerm(e.target.value)}
-//                                     className="form-control"
-//                                 />
-//                             </InputGroup>
-//                         </div>
-//                     </div>
-//                 </div>
-//             </section>
-//
-//             {/* Candidate Cards */}
-//             <section className="py-4">
-//                 <div className="container">
-//                     <div className="row g-4">
-//                         {filteredCandidates.map((candidate) => (
-//                             <div className="col-md-3" key={candidate.candidateId}>
-//                                 <Card className="shadow-sm" style={{ maxWidth: "18rem" }}>
-//                                     <Card.Img
-//                                         variant="top"
-//                                         src={candidate.image || "http://via.placeholder.com/150"}
-//                                         alt={candidate.fullName}
-//                                     />
-//                                     <Card.Body className="text-center">
-//                                         <Card.Title>{candidate.fullName}</Card.Title>
-//                                         <Card.Text>
-//                                             <strong>Party:</strong> {candidate.party}
-//                                         </Card.Text>
-//                                         <Card.Text>
-//                                             <strong>Election:</strong>{" "}
-//                                             {candidate.election?.electionName || "N/A"}
-//                                         </Card.Text>
-//                                         <Button
-//                                             variant="primary"
-//                                             disabled={
-//                                                 votedCandidates.includes(candidate.candidateId) ||
-//                                                 votedElections.has(candidate.election.electionId)
-//                                             }
-//                                             onClick={() => confirmVote(candidate)}
-//                                         >
-//                                             {votedCandidates.includes(candidate.candidateId)
-//                                                 ? "Voted"
-//                                                 : "Vote"}
-//                                         </Button>
-//                                     </Card.Body>
-//                                 </Card>
-//                             </div>
-//                         ))}
-//                     </div>
-//                 </div>
-//             </section>
-//
-//             {/* Confirmation Modal */}
-//             <Modal show={showModal} onHide={() => setShowModal(false)} centered>
-//                 <Modal.Header closeButton>
-//                     <Modal.Title>Confirm Your Vote</Modal.Title>
-//                 </Modal.Header>
-//                 <Modal.Body>
-//                     Are you sure you want to vote for{" "}
-//                     <strong>{candidateToVote?.fullName}</strong> in{" "}
-//                     <strong>{candidateToVote?.election?.electionName}</strong>?
-//                 </Modal.Body>
-//                 <Modal.Footer>
-//                     <Button variant="secondary" onClick={() => setShowModal(false)}>
-//                         Cancel
-//                     </Button>
-//                     <Button
-//                         variant="success"
-//                         onClick={() => handleVote(candidateToVote)}
-//                         disabled={loading}
-//                     >
-//                         {loading ? <Spinner animation="border" size="sm" /> : "Confirm Vote"}
-//                     </Button>
-//                 </Modal.Footer>
-//             </Modal>
-//         </>
-//     );
-// }
-//
-// export default VoterPage;
-//
-
 import React, { useState, useEffect } from "react";
 import { Modal, Form, Spinner } from "react-bootstrap";
 import { FaSearch, FaList } from "react-icons/fa";
@@ -471,6 +15,8 @@ function VoterPage() {
     const [showModal, setShowModal] = useState(false);
     const [candidateToVote, setCandidateToVote] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [isEncrypting, setIsEncrypting] = useState(false);
+    const [receiptId, setReceiptId] = useState(null);
 
     const user = JSON.parse(sessionStorage.getItem("user"));
 
@@ -522,27 +68,34 @@ function VoterPage() {
     };
 
     const handleVote = async (candidate) => {
-        setLoading(true);
-        try {
-            const payload = {
-                candidateId: candidate.candidateId,
-                userId: user.userId,
-            };
+        setIsEncrypting(true);
+        // Simulate cryptographic hashing delay
+        setTimeout(async () => {
+            setLoading(true);
+            try {
+                const payload = {
+                    candidateId: candidate.candidateId,
+                    userId: user.userId,
+                };
 
-            await axios.post(`http://localhost:8080/api/votes`, payload, {
-                headers: { "Content-Type": "application/json" },
-            });
-            saveVotingState(candidate.candidateId, candidate.election.electionId);
-            setShowModal(false);
-        } catch (error) {
-            console.error("Error casting vote:", error);
-        } finally {
-            setLoading(false);
-        }
+                const response = await axios.post(`http://localhost:8080/api/votes`, payload, {
+                    headers: { "Content-Type": "application/json" },
+                });
+                const generatedReceipt = response.data.receiptId;
+                setReceiptId(generatedReceipt);
+                saveVotingState(candidate.candidateId, candidate.election.electionId);
+            } catch (error) {
+                console.error("Error casting vote:", error);
+            } finally {
+                setLoading(false);
+                setIsEncrypting(false);
+            }
+        }, 2000); // 2 second delay for cryptographic animation
     };
 
     const confirmVote = (candidate) => {
         setCandidateToVote(candidate);
+        setReceiptId(null);
         setShowModal(true);
     };
 
@@ -555,19 +108,20 @@ function VoterPage() {
     return (
         <div className="app">
             <Navbar />
-            <div className="container-main voter-container">
+            <main className="container-main voter-container" role="main" tabIndex="-1">
                 <div className="hero-header glass-card">
                     <h1 className="hero-title">Cast Your Vote</h1>
                     <p className="hero-subtitle">Make your voice heard. Secure, transparent, and easy digital voting.</p>
                 </div>
 
-                <div className="filters-section">
+                <div className="filters-section" role="search" aria-label="Election and Candidate Filters">
                     <div className="input-group-custom">
-                        <FaList className="input-icon" />
+                        <FaList className="input-icon" aria-hidden="true" />
                         <Form.Select
                             onChange={(e) => setSelectedElection(e.target.value)}
                             value={selectedElection}
                             className="form-control input-custom"
+                            aria-label="Filter by Election"
                         >
                             <option value="">All Elections</option>
                             {elections.map((election) => (
@@ -578,29 +132,30 @@ function VoterPage() {
                         </Form.Select>
                     </div>
                     <div className="input-group-custom">
-                        <FaSearch className="input-icon" />
+                        <FaSearch className="input-icon" aria-hidden="true" />
                         <input
                             type="text"
                             placeholder="Search candidates..."
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="form-control input-custom"
+                            aria-label="Search Candidates by Name"
                         />
                     </div>
                 </div>
 
-                <div className="candidate-grid">
+                <div className="candidate-grid" role="region" aria-label="Candidate List">
                     {filteredCandidates.map((candidate) => (
-                        <div className="glass-card candidate-card" key={candidate.candidateId}>
+                        <div className="glass-card candidate-card" key={candidate.candidateId} tabIndex="0" aria-label={`Candidate ${candidate.fullName}`}>
                             <div className="candidate-image-wrapper">
                                 <img
                                     src={candidate.image || "https://via.placeholder.com/150"}
-                                    alt={candidate.fullName}
+                                    alt={`Portrait of ${candidate.fullName}`}
                                     className="candidate-image"
                                 />
                             </div>
-                            <h3 className="candidate-name">{candidate.fullName}</h3>
-                            <div className="candidate-party">{candidate.party}</div>
-                            <div className="candidate-election">{candidate.election?.electionName || "N/A"}</div>
+                            <h3 className="candidate-name" id={`candidate-${candidate.candidateId}`}>{candidate.fullName}</h3>
+                            <div className="candidate-party" aria-label="Party">{candidate.party}</div>
+                            <div className="candidate-election" aria-label="Election">{candidate.election?.electionName || "N/A"}</div>
                             <button
                                 className="btn btn-primary vote-btn"
                                 disabled={
@@ -608,39 +163,81 @@ function VoterPage() {
                                     votedElections.has(candidate.election?.electionId)
                                 }
                                 onClick={() => confirmVote(candidate)}
+                                aria-label={
+                                    votedCandidates.includes(candidate.candidateId) 
+                                    ? `Already voted for ${candidate.fullName}` 
+                                    : `Vote for ${candidate.fullName}`
+                                }
                             >
                                 {votedCandidates.includes(candidate.candidateId) ? "Voted" : "Vote Now"}
                             </button>
                         </div>
                     ))}
                     {filteredCandidates.length === 0 && (
-                        <div className="col-span-full text-center" style={{ gridColumn: '1 / -1', padding: '3rem', color: 'var(--text-secondary)' }}>
+                        <div className="col-span-full text-center" style={{ gridColumn: '1 / -1', padding: '3rem', color: 'var(--text-secondary)' }} aria-live="polite">
                             <h4>No candidates found.</h4>
                         </div>
                     )}
                 </div>
-            </div>
+            </main>
 
-            <Modal show={showModal} onHide={() => setShowModal(false)} centered>
-                <Modal.Header closeButton className="border-bottom-0 pb-0">
-                    <Modal.Title style={{ fontWeight: 700 }}>Confirm Your Vote</Modal.Title>
+            <Modal show={showModal} onHide={() => !isEncrypting && setShowModal(false)} centered aria-labelledby="vote-review-modal" backdrop={receiptId ? "static" : true}>
+                <Modal.Header closeButton={!isEncrypting && !receiptId} className="border-bottom-0 pb-0">
+                    <Modal.Title id="vote-review-modal" style={{ fontWeight: 700 }}>
+                        {receiptId ? "Vote Successfully Cast" : isEncrypting ? "Securing Your Ballot..." : "Review and Confirm"}
+                    </Modal.Title>
                 </Modal.Header>
-                <Modal.Body className="py-4">
-                    <p style={{ fontSize: '1.1rem', marginBottom: 0 }}>
-                        Are you sure you want to cast your vote for <strong style={{ color: 'var(--primary-color)' }}>{candidateToVote?.fullName}</strong> in the <strong>{candidateToVote?.election?.electionName}</strong>?
-                    </p>
-                    <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginTop: '1rem', marginBottom: 0 }}>
-                        Note: This action cannot be undone.
-                    </p>
+                <Modal.Body className="py-4 text-center">
+                    {receiptId ? (
+                        <div className="receipt-box" style={{ background: 'var(--surface-color)', padding: '2rem', borderRadius: '12px', border: '1px solid rgba(16, 185, 129, 0.5)' }}>
+                            <div style={{ color: '#10b981', fontSize: '3rem', marginBottom: '1rem' }}>✓</div>
+                            <h4 style={{ color: 'var(--primary-color)' }}>Cryptographic Receipt</h4>
+                            <p style={{ color: 'var(--text-secondary)' }}>Save this ID to verify your vote on the public bulletin board without revealing your choice.</p>
+                            <div style={{ background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: '8px', fontFamily: 'monospace', fontSize: '1.2rem', letterSpacing: '2px', userSelect: 'all', wordBreak: 'break-all' }}>
+                                {receiptId}
+                            </div>
+                        </div>
+                    ) : isEncrypting ? (
+                        <div className="encryption-animation" aria-live="polite">
+                            <Spinner animation="grow" variant="primary" style={{ width: '3rem', height: '3rem' }} />
+                            <h5 className="mt-3" style={{ color: 'var(--primary-color)' }}>Cryptographic Wrapping in Progress</h5>
+                            <p className="text-muted small">Generating zero-knowledge proofs and encrypting payload...</p>
+                        </div>
+                    ) : (
+                        <>
+                            <div className="review-box" style={{ background: 'var(--surface-color)', padding: '2rem', borderRadius: '12px', border: '1px solid var(--border-color)', marginBottom: '1rem' }}>
+                                <h5 className="text-muted mb-3">You are about to cast your vote for:</h5>
+                                <div style={{ width: '80px', height: '80px', margin: '0 auto 1rem', borderRadius: '50%', overflow: 'hidden', border: '3px solid var(--primary-color)' }}>
+                                    <img src={candidateToVote?.image || "https://via.placeholder.com/150"} alt={`Portrait of ${candidateToVote?.fullName}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                </div>
+                                <h2>{candidateToVote?.fullName}</h2>
+                                <h6 style={{ color: 'var(--text-secondary)' }}>{candidateToVote?.party}</h6>
+                                <hr />
+                                <strong>Election:</strong> {candidateToVote?.election?.electionName}
+                            </div>
+                            <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: 0 }}>
+                                By confirming, you cryptographically sign this ballot. This action is immutable and cannot be undone.
+                            </p>
+                        </>
+                    )}
                 </Modal.Body>
-                <Modal.Footer className="border-top-0 pt-0">
-                    <button className="btn" style={{ background: 'transparent', color: 'var(--text-secondary)' }} onClick={() => setShowModal(false)}>
-                        Cancel
-                    </button>
-                    <button className="btn btn-primary" onClick={() => handleVote(candidateToVote)} disabled={loading}>
-                        {loading ? <Spinner animation="border" size="sm" /> : "Confirm Vote"}
-                    </button>
-                </Modal.Footer>
+                {!isEncrypting && !receiptId && (
+                    <Modal.Footer className="border-top-0 pt-0 justify-content-center">
+                        <button className="btn" style={{ background: 'transparent', color: 'var(--text-secondary)' }} onClick={() => setShowModal(false)} aria-label="Cancel voting">
+                            Cancel
+                        </button>
+                        <button className="btn btn-primary" style={{ padding: '0.75rem 2rem', fontWeight: 600 }} onClick={() => handleVote(candidateToVote)} disabled={loading} aria-label="Confirm and encrypt vote">
+                            Confirm & Encrypt Vote
+                        </button>
+                    </Modal.Footer>
+                )}
+                {receiptId && (
+                    <Modal.Footer className="border-top-0 pt-0 justify-content-center">
+                        <button className="btn btn-primary" style={{ padding: '0.75rem 2rem', fontWeight: 600 }} onClick={() => setShowModal(false)}>
+                            Close
+                        </button>
+                    </Modal.Footer>
+                )}
             </Modal>
         </div>
     );

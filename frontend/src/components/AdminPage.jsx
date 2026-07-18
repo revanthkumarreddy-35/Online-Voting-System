@@ -9,6 +9,7 @@ import "./AdminPage.css";
 function AdminDashboard() {
     const [users, setUsers] = useState([]);
     const [stats, setStats] = useState({});
+    const [totalVotes, setTotalVotes] = useState(0);
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(1);
     const [searchQuery, setSearchQuery] = useState("");
@@ -37,7 +38,17 @@ function AdminDashboard() {
     useEffect(() => {
         fetchUsers(currentPage, searchQuery);
         fetchRoleStats();
+        fetchTotalVotes();
     }, [currentPage, searchQuery]);
+
+    const fetchTotalVotes = async () => {
+        try {
+            const response = await axios.get("http://localhost:8080/api/votes");
+            setTotalVotes(response.data.length);
+        } catch (error) {
+            console.error("Error fetching votes:", error);
+        }
+    };
 
     const fetchUsers = async (pageNo, query) => {
         try {
@@ -184,15 +195,23 @@ function AdminDashboard() {
                 </div>
 
                 <div className="row mb-4">
-                    <div className="col-md-4 mb-4">
-                        <div className="glass-card admin-stats-card">
+                    <div className="col-md-3 mb-4">
+                        <div className="glass-card admin-stats-card h-100 d-flex flex-column justify-content-center align-items-center">
                             <h5 style={{ color: 'var(--text-secondary)' }}>Total Users</h5>
                             <div style={{ fontSize: '4rem', fontWeight: 700, color: 'var(--primary-color)' }}>
                                 {users.length}
                             </div>
                         </div>
                     </div>
-                    <div className="col-md-8 mb-4">
+                    <div className="col-md-3 mb-4">
+                        <div className="glass-card admin-stats-card h-100 d-flex flex-column justify-content-center align-items-center">
+                            <h5 style={{ color: 'var(--text-secondary)' }}>Total Votes Cast</h5>
+                            <div style={{ fontSize: '4rem', fontWeight: 700, color: '#10b981' }}>
+                                {totalVotes}
+                            </div>
+                        </div>
+                    </div>
+                    <div className="col-md-6 mb-4">
                         <div className="glass-card" style={{ padding: '1.5rem', height: '100%' }}>
                             <h5 style={{ color: 'var(--text-secondary)', marginBottom: '1rem' }}>User Roles Overview</h5>
                             <canvas id="chart" style={{ maxHeight: '250px' }}></canvas>
